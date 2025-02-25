@@ -44,14 +44,45 @@ function degree(element, tree){
 }
 function countNode(tree){
     let nodes = 0;
-    /* if(tree.right) nodes++;
-    if(tree.left) nodes++ */
     tree.right ? nodes++ : nodes;
     tree.left ? nodes++ : nodes;
 
     return nodes
 }
 
+
+function insert(element, tree){
+    if(!tree.root){
+        tree.root = element;
+        return tree;
+    }else{
+
+        if(element>tree.root){
+            if(tree.right){
+               return insert(element, tree.right)
+
+           }else{
+             tree.right = {/* root: null, left: null, right: null */}
+             //return tree.right = insert(element, tree.right)
+             return insert(element, tree.right)
+            //return insert(element, tree.right)
+           }
+        }
+        if(element<tree.root){
+            if(tree.left){
+                return insert(element, tree.left)
+
+               }else{
+                tree.left = {}
+                //tree.left = insert(element, tree.left)
+                return insert(element, tree.left)
+                //return insert(element, tree.left)
+               }
+        }
+    }
+
+
+}
 
 
 
@@ -63,9 +94,10 @@ let initialTree = {
 let arrayInicial = [6, 8, 2, 1, 4, 3];
 let tree = create(arrayInicial, initialTree);
 
+tree = insert(9, tree)
 //console.log(countNode( {root: 5, left: null, right: 6} ) );
-//console.log(JSON.stringify(tree, null, 2));
-console.log(degree( 4, tree))
+console.log(JSON.stringify(tree, null, 2));
+//console.log(degree( 4, tree))
 
 
 
