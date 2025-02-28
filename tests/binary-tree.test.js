@@ -31,6 +31,17 @@ describe('binary-tree tests', () => {
       expect(stringTree).toEqual("root:6 ")
     })
 
+    test('create a new tree with an empty array', () => {
+      const elements = []
+      const tree = createTree(elements)
+      expect(tree).toBeNull()
+    })
+    
+    test('create a new tree with null', () => {
+      const tree = createTree(null)
+      expect(tree).toBeNull()
+    })
+
   })
 
   describe('insert function', () => {
@@ -68,6 +79,12 @@ describe('binary-tree tests', () => {
       insert(tree, 3)
       stringTree = toString(tree)
       expect(stringTree).toEqual("root:6 (left:2 (left:1 right:4 (left:3 ))right:8 )")
+    })
+    
+    test('insert duplicate elements', () => {
+      const tree = createTree([10, 5, 15])
+      insert(tree, 5)
+      expect(toString(tree)).toEqual("root:10 (left:5 right:15 )")
     })
 
   })
@@ -111,7 +128,7 @@ describe('binary-tree tests', () => {
       const tree = createTree([6, 2, 8, 1, 4, 3])
       const node = getElement(tree, 8)
 
-      expect(node.value).toEqual(8)
+      expect(node.root).toEqual(8)
     })
 
     test('do not find an element', () => {
@@ -119,6 +136,18 @@ describe('binary-tree tests', () => {
       const node = getElement(tree, 10)
 
       expect(node).toBeUndefined()
+    })
+
+    test('get element from an empty tree', () => {
+      const tree = createTree([])
+      const node = getElement(tree, 10)
+      expect(node).toBeUndefined()
+    })
+    
+    test('get element from a tree with one node', () => {
+      const tree = createTree(10)
+      const node = getElement(tree, 10)
+      expect(node.root).toEqual(10)
     })
 
   })
@@ -142,8 +171,8 @@ describe('binary-tree tests', () => {
     test('check fathers', () => {
       const tree = createTree([6, 2, 8, 1, 4, 3])
 
-      expect(getFather(tree, 8).value).toEqual(6)
-      expect(getFather(tree, 1).value).toEqual(2)
+      expect(getFather(tree, 8).root).toEqual(6)
+      expect(getFather(tree, 1).root).toEqual(2)
 
       expect(getFather(tree, 6)).toBeUndefined()
     })
@@ -155,7 +184,7 @@ describe('binary-tree tests', () => {
     test('check node brothers', () => {
       const tree = createTree([6, 2, 8, 1, 4, 3])
 
-      expect(getBrother(tree, 8).value).toEqual(2)
+      expect(getBrother(tree, 8).root).toEqual(2)
 
       expect(getBrother(tree, 3)).toBeUndefined()
     })
@@ -169,7 +198,6 @@ describe('binary-tree tests', () => {
 
       expect(calculateTreeDepth(tree)).toEqual(3)
     })
-
   })
 
   describe('calculateNodeLevel function', () => {

@@ -10,6 +10,10 @@ function createTree(elements) {
     return insert(tree, elements)
   }
 
+  if (elements.length === 0) {
+    return null
+  }
+
   for (const element of elements) {
     tree = insert(tree, element)
   }
@@ -18,7 +22,7 @@ function createTree(elements) {
 }
 
 function degree(tree, value) {
-  if (!tree) return 'Árvore inválida'
+  if (!tree) return undefined
 
   if (value < tree.root) {
     return degree(tree.left, value)
@@ -30,7 +34,7 @@ function degree(tree, value) {
     if (tree.left && tree.right) return 2
     else if (tree.left || tree.right) return 1
     else return 0
-  } else return 'Elemento não encontrado'
+  } else return undefined
 }
 
 function insert(tree, value) {
@@ -39,7 +43,7 @@ function insert(tree, value) {
   } else if (value > tree.root) {
     tree.right = insert(tree.right, value)
   }
-  else {
+  else if (value < tree.root) {
     tree.left = insert(tree.left, value)
   }
   return tree
@@ -85,10 +89,12 @@ function remove(tree, value) {
         temp = temp.left
       }
 
-      tree.root = temp.root
-      const removed = remove(tree.right, temp.root)
-      return removed
+      temp.left = tree.left;
+      tree.root = tree.right.root;
+      tree.left = tree.right.left;
+      tree.right = tree.right.right;
 
+      return true;
     }
   }
 }
@@ -96,6 +102,7 @@ function remove(tree, value) {
 function getFather(tree, value, parent = null) {
   if (!tree) return undefined
   if (value === tree.root) {
+    if (parent === null) return undefined
     return parent
   }
   if (value < tree.root) {
@@ -108,20 +115,20 @@ function getFather(tree, value, parent = null) {
 function getBrother(tree, value) {
 
   const father = getFather(tree, value)
-  if (!father) return null
+  if (!father) return undefined
 
   if (father.left?.root === value) {
-    return father.right ? father.right : null;
+    return father.right ? father.right : undefined
 
   } else if (father.right?.root === value) {
-    return father.left ? father.left : null;
+    return father.left ? father.left : undefined
   }
 
-  return null;
+  return undefined
 }
 
 function getElement(tree, value) {
-  if (!tree) return null
+  if (!tree) return undefined
 
   if (value === tree.root) return tree
 
@@ -129,24 +136,37 @@ function getElement(tree, value) {
   else if (value < tree.root) return getElement(tree.left, value)
 }
 
-/**
- * Calculate the tree depth
- * 
- * @param {object} tree
- * @returns {number} depth - tree depth
- */
-function calculateTreeDepth(tree) { 
-  if(!tree) return 0
+function calculateTreeDepth(tree, level = 0) {
+  if (!tree || !tree.root) return undefined
 
-  const leftDepth = calculateTreeDepth(tree.left)
+  if (!tree.left && !tree.right) {
+    return level
+  }
 
-  const rightDepth = calculateTreeDepth(tree.right)
+  const leftDepth = calculateTreeDepth(tree.left, level + 1)
+  const rightDepth = calculateTreeDepth(tree.right, level + 1)
 
-  return Math.max(leftDepth, rightDepth) + 1
+
+  return Math.max(leftDepth ?? 0, rightDepth ?? 0)
+  
 }
 
-function calculateNodeLevel(tree, value) { }
+function calculateNodeLevel(tree, value, level = 0) {
+  if (!tree) return undefined
 
+  if (value === tree.root) return level
+
+  const leftLevel = calculateNodeLevel(tree.left, value, level + 1)
+  if (leftLevel !== undefined) {
+    return leftLevel
+  }
+
+  const rightLevel = calculateNodeLevel(tree.right, value, level + 1)
+  if (rightLevel !== undefined) {
+    return rightLevel
+  }
+  return undefined
+}
 
 function toString(tree) {
   let stringTree = `root:${tree.root} `
@@ -172,16 +192,6 @@ function auxToString(node) {
     return ''
   }
 }
-
-const elements = [6, 2, 8, 1, 4, 3, 7]
-const tree = createTree(elements)
-console.log(toString(tree))
-// console.log(remove(tree, 2))
-// console.log(degree(tree, 1))
-// console.log(getFather(tree, 2))
-// console.log(getBrother(tree, 3))
-// console.log(getElement(tree, 6))
-console.log(calculateTreeDepth(tree))
 
 module.exports = {
   createTree,
